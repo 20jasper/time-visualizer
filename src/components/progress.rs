@@ -29,6 +29,7 @@ pub fn TimedProgressBar(
         move || 100. * ((start_time.elapsed().as_micros()) as f64 / (length.as_micros()) as f64);
 
     let (progress, set_progress) = create_signal(Some(0.));
+    let progress_remainder = create_memo(move |_| progress.get().map(|x| x % 100.));
     let loops = move || (progress.get().unwrap_or_default() as u32) / 100;
 
     set_interval(
@@ -44,6 +45,6 @@ pub fn TimedProgressBar(
             loop:
             {loops}
         </P>
-        <ProgressBar progress=progress/>
+        <ProgressBar progress=progress_remainder/>
     }
 }
