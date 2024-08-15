@@ -21,7 +21,7 @@ pub fn App() -> impl IntoView {
         <Stylesheet id="leptos" href="/pkg/leptonic-template-ssr.css"/>
         <Stylesheet href="https://fonts.googleapis.com/css?family=Roboto&display=swap"/>
 
-        <Title text="Leptonic CSR template"/>
+        <Title text="Progress Time Visualizer"/>
 
         <Root default_theme=LeptonicTheme::default()>
             <Router fallback=|| {

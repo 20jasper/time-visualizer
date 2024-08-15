@@ -9,7 +9,7 @@ use crate::components::progress::TimedProgressBar;
 pub fn Welcome() -> impl IntoView {
     view! {
         <Box style="display: flex; flex-direction: column; align-items: center; padding: 1em; min-height: 100%; min-width: 100%">
-            <H2>"Welcome to Leptonic"</H2>
+            <H1>"Progress Time Visualizer"</H1>
             <TimedProgressBar title="old query".into() length=Duration::from_secs(10)/>
             <TimedProgressBar
                 title="new query".into()
