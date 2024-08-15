@@ -27,9 +27,7 @@ pub fn App() -> impl IntoView {
             <Router fallback=|| {
                 let mut outside_errors = Errors::default();
                 outside_errors.insert_with_default_key(AppError::NotFound);
-                view! {
-                    <ErrorTemplate outside_errors/>
-                }
+                view! { <ErrorTemplate outside_errors/> }
             }>
                 <Routes>
                     <Route path="" view=|| view! { <Welcome/> }/>

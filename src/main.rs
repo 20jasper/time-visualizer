@@ -1,6 +1,7 @@
 use leptos::*;
 
 mod app;
+pub mod components;
 mod error_template;
 mod pages;
 
