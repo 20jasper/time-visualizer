@@ -24,3 +24,8 @@ body {
 [data-theme="dark"] {
     --brand-color: #3061aa;
 }
+
+leptonic-progress-bar {
+    min-width: 50vw;
+    max-width: 90vw;
+}

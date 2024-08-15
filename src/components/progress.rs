@@ -1,8 +1,9 @@
-use core::time::Duration;
+use core::{num::ParseIntError, time::Duration};
 use instant::Instant;
 
 use leptonic::prelude::*;
 use leptos::*;
+use leptos_router::use_query_map;
 
 fn format_time(duration: Duration) -> String {
     let length = duration;
@@ -23,7 +24,6 @@ fn format_time(duration: Duration) -> String {
 pub fn TimedProgressBar(
     #[prop(default = Instant::now())] start_time: Instant,
     #[prop(default = Duration::from_millis(100))] interval: Duration,
-    title: String,
     length: Duration,
 ) -> impl IntoView {
     let percentage_done =
@@ -41,12 +41,67 @@ pub fn TimedProgressBar(
     );
 
     view! {
-        <H2>{title}</H2>
-        <H3>{format_time(length)}</H3>
-        <P>
-            loop:
-            {loops}
-        </P>
-        <ProgressBar progress=progress_remainder/>
+        <TableCell>{loops}</TableCell>
+        <TableCell>
+            <ProgressBar progress=progress_remainder/>
+        </TableCell>
+    }
+}
+
+struct TimedProgressParams {
+    title: String,
+    length: Duration,
+}
+
+impl TimedProgressParams {
+    fn build(title: String, length: String) -> Result<TimedProgressParams, ParseIntError> {
+        Ok(Self {
+            title,
+            length: Duration::from_millis(length.parse()?),
+        })
+    }
+}
+
+#[component]
+pub fn TimedProgressContainer() -> impl IntoView {
+    view! {
+        <Box class="timed-container">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>"Title"</TableHeaderCell>
+                        <TableHeaderCell>"Length"</TableHeaderCell>
+                        <TableHeaderCell min_width=true>"Loops"</TableHeaderCell>
+                        <TableHeaderCell min_width=true>"Progress"</TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <For
+                        each=move || {
+                            use_query_map()
+                                .get()
+                                .0
+                                .clone()
+                                .into_iter()
+                                .filter_map(|(title, length)| {
+                                    TimedProgressParams::build(title, length).ok()
+                                })
+                        }
+
+                        key=|x| x.title.clone()
+                        children=move |TimedProgressParams { title, length }| {
+                            view! {
+                                <TableRow>
+                                    <TableCell>{title}</TableCell>
+                                    <TableCell>{format_time(length)}</TableCell>
+                                    <TimedProgressBar length=length/>
+                                </TableRow>
+                            }
+                        }
+                    />
+
+                </TableBody>
+            </Table>
+        </Box>
     }
 }
