@@ -1,4 +1,4 @@
-use leptonic::prelude::*;
+use leptonic::components::prelude::{Box, LinkButton, H1, P};
 use leptos::*;
 use thiserror::Error;
 

@@ -1,4 +1,4 @@
-use leptonic::prelude::*;
+use leptonic::components::prelude::{LeptonicTheme, Root};
 use leptos::*;
 use leptos_meta::{provide_meta_context, Meta, Stylesheet, Title};
 use leptos_router::*;

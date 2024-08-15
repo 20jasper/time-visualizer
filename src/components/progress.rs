@@ -1,7 +1,10 @@
 use core::{num::ParseIntError, time::Duration};
 use instant::Instant;
 
-use leptonic::prelude::*;
+use leptonic::components::prelude::TableCell;
+use leptonic::components::prelude::{
+    Box, ProgressBar, Table, TableBody, TableHeader, TableHeaderCell, TableRow,
+};
 use leptos::*;
 use leptos_router::use_query_map;
 

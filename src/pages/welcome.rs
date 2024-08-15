@@ -1,9 +1,7 @@
-use core::time::Duration;
-
-use leptonic::prelude::*;
+use leptonic::components::prelude::{Box, H1};
 use leptos::*;
 
-use crate::components::progress::{TimedProgressBar, TimedProgressContainer};
+use crate::components::progress::TimedProgressContainer;
 
 #[component]
 pub fn Welcome() -> impl IntoView {
