@@ -14,7 +14,7 @@ pub fn TimedProgressBar(
 
     set_interval(
         move || {
-            set_progress.update(|p| *p = p.map(|v| v + 1.));
+            set_progress.update(|p| *p = p.map(|v| (v + 1.) % 101.));
         },
         interval,
     );
