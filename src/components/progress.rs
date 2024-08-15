@@ -3,7 +3,7 @@ use instant::Instant;
 
 use leptonic::components::prelude::TableCell;
 use leptonic::components::prelude::{
-    Box, ProgressBar, Table, TableBody, TableHeader, TableHeaderCell, TableRow, H2, P,
+    Box, ProgressBar, Table, TableBody, TableHeader, TableHeaderCell, TableRow,
 };
 use leptos::*;
 use leptos_router::use_query_map;
