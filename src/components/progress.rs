@@ -1,23 +1,11 @@
-use core::time::{self, Duration};
+use core::time::Duration;
+use instant::Instant;
 
 use leptonic::prelude::*;
 use leptos::*;
 
-#[component]
-pub fn TimedProgressBar(
-    #[prop(default = Some(0.))] start: Option<f64>,
-    length: Duration,
-) -> impl IntoView {
-    let (progress, set_progress) = create_signal(Some(start.unwrap_or_default()));
-
-    let interval = length.div_f32(100.);
-
-    set_interval(
-        move || {
-            set_progress.update(|p| *p = p.map(|v| (v + 1.) % 101.));
-        },
-        interval,
-    );
+fn format_time(duration: Duration) -> String {
+    let length = duration;
 
     let seconds_str = if length.as_secs() == 0 {
         "".into()
@@ -25,8 +13,37 @@ pub fn TimedProgressBar(
         format!("{} seconds,", length.as_secs())
     };
 
+    format!(
+        "length: {seconds_str} {} milliseconds",
+        length.subsec_millis()
+    )
+}
+
+#[component]
+pub fn TimedProgressBar(
+    #[prop(default = Instant::now())] start_time: Instant,
+    #[prop(default = Duration::from_millis(100))] interval: Duration,
+    length: Duration,
+) -> impl IntoView {
+    let percentage_done =
+        move || 100. * ((start_time.elapsed().as_micros()) as f64 / (length.as_micros()) as f64);
+
+    let (progress, set_progress) = create_signal(Some(0.));
+    let loops = move || (progress.get().unwrap_or_default() as u32) / 100;
+
+    set_interval(
+        move || {
+            set_progress.set(Some(percentage_done()));
+        },
+        interval,
+    );
+
     view! {
-        <H2>{format!("length: {seconds_str} {} milliseconds", length.subsec_millis())}</H2>
+        <H2>{format_time(length)}</H2>
+        <P>
+            loop:
+            {loops}
+        </P>
         <ProgressBar progress=progress/>
     }
 }
