@@ -23,6 +23,7 @@ fn format_time(duration: Duration) -> String {
 pub fn TimedProgressBar(
     #[prop(default = Instant::now())] start_time: Instant,
     #[prop(default = Duration::from_millis(100))] interval: Duration,
+    title: String,
     length: Duration,
 ) -> impl IntoView {
     let percentage_done =
@@ -40,7 +41,8 @@ pub fn TimedProgressBar(
     );
 
     view! {
-        <H2>{format_time(length)}</H2>
+        <H2>{title}</H2>
+        <H3>{format_time(length)}</H3>
         <P>
             loop:
             {loops}
