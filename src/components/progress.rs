@@ -17,10 +17,7 @@ fn format_time(duration: Duration) -> String {
         format!("{} seconds,", length.as_secs())
     };
 
-    format!(
-        "length: {seconds_str} {} milliseconds",
-        length.subsec_millis()
-    )
+    format!("{seconds_str} {} milliseconds", length.subsec_millis())
 }
 
 #[component]
