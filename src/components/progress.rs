@@ -3,7 +3,7 @@ use instant::Instant;
 
 use leptonic::components::prelude::TableCell;
 use leptonic::components::prelude::{
-    Box, ProgressBar, Table, TableBody, TableHeader, TableHeaderCell, TableRow,
+    Box, ProgressBar, Table, TableBody, TableHeader, TableHeaderCell, TableRow, H2, P,
 };
 use leptos::*;
 use leptos_router::use_query_map;
@@ -79,7 +79,7 @@ impl TimedProgressParams {
 #[component]
 pub fn TimedProgressContainer() -> impl IntoView {
     view! {
-        <Box class="timed-container">
+        <Box class="timed-container" style="display: flex; flex-direction: column; align-items: center;">
             <Table>
                 <TableHeader>
                     <TableRow>
