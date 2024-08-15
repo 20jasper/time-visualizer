@@ -8,16 +8,30 @@ use leptonic::components::prelude::{
 use leptos::*;
 use leptos_router::use_query_map;
 
+const SECONDS_PER_MINUTE: u64 = 60;
+const MINUTES_PER_HOUR: u64 = 60;
+const SECONDS_PER_HOUR: u64 = MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
+
 fn format_time(duration: Duration) -> String {
     let length = duration;
 
-    let seconds_str = if length.as_secs() == 0 {
-        "".into()
-    } else {
-        format!("{} seconds,", length.as_secs())
-    };
+    let mut s = String::new();
 
-    format!("{seconds_str} {} milliseconds", length.subsec_millis())
+    let hours = length.as_secs() / SECONDS_PER_HOUR;
+    if hours > 0 {
+        s += &format!("{hours} hours ");
+    }
+    let minutes = (length.as_secs() / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
+    if minutes > 0 {
+        s += &format!("{minutes} minutes ");
+    }
+    let seconds = length.as_secs() % SECONDS_PER_MINUTE;
+    if seconds > 0 {
+        s += &format!("{seconds} seconds ");
+    }
+    s += &format!("{} milliseconds", length.subsec_millis());
+
+    s
 }
 
 #[component]
