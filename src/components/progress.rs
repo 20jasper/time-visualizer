@@ -1,4 +1,5 @@
-use core::{num::ParseIntError, time::Duration};
+use core::fmt::Display;
+use core::time::Duration;
 use instant::Instant;
 
 use leptonic::components::prelude::TableCell;
@@ -38,10 +39,13 @@ fn format_time(duration: Duration) -> String {
 pub fn TimedProgressBar(
     #[prop(default = Instant::now())] start_time: Instant,
     #[prop(default = Duration::from_millis(100))] interval: Duration,
-    length: Duration,
+    length: Option<Duration>,
 ) -> impl IntoView {
-    let percentage_done =
-        move || 100. * ((start_time.elapsed().as_micros()) as f64 / (length.as_micros()) as f64);
+    let percentage_done = move || {
+        length.map(|length| {
+            100. * ((start_time.elapsed().as_micros()) as f64 / (length.as_micros()) as f64)
+        })
+    };
 
     let (progress, set_progress) = create_signal(Some(0.));
     let progress_remainder = create_memo(move |_| progress.get().map(|x| x % 100.));
@@ -49,7 +53,7 @@ pub fn TimedProgressBar(
 
     set_interval(
         move || {
-            set_progress.set(Some(percentage_done()));
+            set_progress.set(percentage_done());
         },
         interval,
     );
@@ -62,24 +66,45 @@ pub fn TimedProgressBar(
     }
 }
 
+#[derive(Debug, Clone)]
+enum Length {
+    Determinate(Duration),
+    Indeterminate(String),
+}
+
+impl Display for Length {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let formatted = match self {
+            Length::Determinate(length) => format_time(*length),
+            Length::Indeterminate(message) => message.to_owned(),
+        };
+        write!(f, "{formatted}")
+    }
+}
 struct TimedProgressParams {
     title: String,
-    length: Duration,
+    length: Length,
 }
 
 impl TimedProgressParams {
-    fn build(title: String, length: String) -> Result<TimedProgressParams, ParseIntError> {
-        Ok(Self {
-            title,
-            length: Duration::from_millis(length.parse()?),
-        })
+    fn build(title: String, length_or_message: String) -> TimedProgressParams {
+        let length = if let Ok(length) = length_or_message.parse() {
+            Length::Determinate(Duration::from_millis(length))
+        } else {
+            let message = length_or_message;
+            Length::Indeterminate(message)
+        };
+        Self { title, length }
     }
 }
 
 #[component]
 pub fn TimedProgressContainer() -> impl IntoView {
     view! {
-        <Box class="timed-container" style="display: flex; flex-direction: column; align-items: center;">
+        <Box
+            class="timed-container"
+            style="display: flex; flex-direction: column; align-items: center;"
+        >
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -95,20 +120,22 @@ pub fn TimedProgressContainer() -> impl IntoView {
                             use_query_map()
                                 .get()
                                 .0
-                                .clone()
                                 .into_iter()
-                                .filter_map(|(title, length)| {
-                                    TimedProgressParams::build(title, length).ok()
-                                })
+                                .map(|(title, length)| TimedProgressParams::build(title, length))
                         }
 
                         key=|x| x.title.clone()
                         children=move |TimedProgressParams { title, length }| {
+                            let time = if let Length::Determinate(len) = length {
+                                Some(len)
+                            } else {
+                                None
+                            };
                             view! {
                                 <TableRow>
                                     <TableCell>{title}</TableCell>
-                                    <TableCell>{format_time(length)}</TableCell>
-                                    <TimedProgressBar length=length/>
+                                    <TableCell>{format!("{}", length)}</TableCell>
+                                    <TimedProgressBar length=time/>
                                 </TableRow>
                             }
                         }
